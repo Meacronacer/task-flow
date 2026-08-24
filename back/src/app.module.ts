@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './modules/users/users.module';
 import * as Joi from 'joi';
+import { RedisModule } from './shared/redis/redis.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -34,7 +36,9 @@ import * as Joi from 'joi';
       }),
     }),
 
+    RedisModule,
     UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
