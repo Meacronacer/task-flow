@@ -5,6 +5,7 @@ import * as Joi from 'joi';
 import { RedisModule } from './shared/redis/redis.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AuthModule } from './modules/auth/auth.module';
     RedisModule,
     UsersModule,
     AuthModule,
+    ProjectsModule,
   ],
 })
 export class AppModule {}
