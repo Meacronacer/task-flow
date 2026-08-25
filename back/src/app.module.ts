@@ -9,6 +9,8 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { ColumnsModule } from './modules/columns/columns.module';
 import { GatewayModule } from './gateway/gateway.module';
+import { CommentsModule } from './modules/comments/comments.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
   imports: [
@@ -44,9 +46,11 @@ import { GatewayModule } from './gateway/gateway.module';
     UsersModule,
     AuthModule,
     GatewayModule,
+    AiModule,
     ProjectsModule,
     TasksModule,
     ColumnsModule,
+    CommentsModule,
   ],
 })
 export class AppModule {}
