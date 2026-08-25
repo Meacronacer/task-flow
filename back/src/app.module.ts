@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { ColumnsModule } from './modules/columns/columns.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { ColumnsModule } from './modules/columns/columns.module';
     RedisModule,
     UsersModule,
     AuthModule,
+    GatewayModule,
     ProjectsModule,
     TasksModule,
     ColumnsModule,

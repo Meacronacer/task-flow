@@ -13,6 +13,7 @@ import { MoveTaskDto } from './dto/move-task.dto';
 import { ReorderTasksDto } from './dto/reorder-tasks.dto';
 import { BoardColumn } from '../columns/entities/column.entity';
 import { ProjectsService } from '../projects/projects.service';
+import { EventsGateway } from '../../gateway/events.gateway';
 
 @Injectable()
 export class TasksService {
@@ -24,6 +25,7 @@ export class TasksService {
     @InjectRepository(BoardColumn)
     private columnsRepo: Repository<BoardColumn>,
     private projectsService: ProjectsService,
+    private eventsGateway: EventsGateway,
     private dataSource: DataSource,
   ) {}
 
@@ -34,7 +36,6 @@ export class TasksService {
     userId: string,
     dto: CreateTaskDto,
   ): Promise<Task> {
-    // Проверяем что колонка принадлежит проекту
     const column = await this.columnsRepo.findOne({
       where: { id: dto.columnId, projectId },
     });
@@ -61,6 +62,13 @@ export class TasksService {
       taskId: saved.id,
       title: saved.title,
       columnId: saved.columnId,
+    });
+
+    this.eventsGateway.emitToProject(projectId, 'task.created', {
+      taskId: saved.id,
+      columnId: saved.columnId,
+      title: saved.title,
+      createdBy: userId,
     });
 
     return saved;
@@ -104,7 +112,6 @@ export class TasksService {
       task.deadline = dto.deadline ? new Date(dto.deadline) : null;
     }
 
-    // Инвалидируем AI-саммари при смене статуса
     if (dto.status !== undefined && dto.status !== prevStatus) {
       task.aiSummary = null;
     }
@@ -121,11 +128,19 @@ export class TasksService {
       },
     );
 
+    this.eventsGateway.emitToProject(task.projectId, 'task.updated', {
+      taskId,
+      fields: Object.keys(dto),
+      updatedBy: userId,
+    });
+
     return saved;
   }
 
   async remove(taskId: string, userId: string): Promise<void> {
     const task = await this.findOne(taskId);
+    const { projectId, columnId } = task;
+
     await this.tasksRepo.remove(task);
 
     await this.projectsService.logActivity(
@@ -137,6 +152,12 @@ export class TasksService {
         title: task.title,
       },
     );
+
+    this.eventsGateway.emitToProject(projectId, 'task.deleted', {
+      taskId,
+      columnId,
+      deletedBy: userId,
+    });
   }
 
   // ─── Move (drag & drop) ───────────────────────────────────────────
@@ -169,6 +190,14 @@ export class TasksService {
         position: dto.position,
       },
     );
+
+    this.eventsGateway.emitToProject(task.projectId, 'task.moved', {
+      taskId,
+      fromColumnId,
+      toColumnId: dto.columnId,
+      position: dto.position,
+      movedBy: userId,
+    });
 
     return saved;
   }
