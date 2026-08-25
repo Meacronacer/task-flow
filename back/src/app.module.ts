@@ -11,6 +11,8 @@ import { ColumnsModule } from './modules/columns/columns.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { AiModule } from './modules/ai/ai.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -51,6 +53,8 @@ import { AiModule } from './modules/ai/ai.module';
     TasksModule,
     ColumnsModule,
     CommentsModule,
+    ScheduleModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}
