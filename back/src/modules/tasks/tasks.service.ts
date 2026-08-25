@@ -277,7 +277,7 @@ export class TasksService {
     });
   }
 
-  async updateAiSummary(taskId: string, summary: string): Promise<void> {
+  async updateAiSummary(taskId: string, summary: string | null): Promise<void> {
     await this.tasksRepo.update(taskId, { aiSummary: summary });
   }
 }
