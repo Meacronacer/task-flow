@@ -7,6 +7,7 @@ import { Task, TaskPriority, TaskStatus } from './entities/task.entity';
 import { TimeLog } from './entities/time-log.entity';
 import { BoardColumn } from '../columns/entities/column.entity';
 import { ProjectsService } from '../projects/projects.service';
+import { EventsGateway } from '../../gateway/events.gateway';
 
 const makeTask = (overrides: Partial<Task> = {}): Task =>
   ({
@@ -93,6 +94,12 @@ describe('TasksService', () => {
         { provide: getRepositoryToken(BoardColumn), useValue: columnsRepo },
         { provide: ProjectsService, useValue: projectsService },
         { provide: DataSource, useValue: dataSource },
+        {
+          provide: EventsGateway,
+          useValue: {
+            emitToProject: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
