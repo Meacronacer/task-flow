@@ -6,11 +6,13 @@ import { BoardColumn } from '../columns/entities/column.entity';
 import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
 import { ProjectsModule } from '../projects/projects.module';
+import { GatewayModule } from '../../gateway/gateway.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Task, TimeLog, BoardColumn]),
     ProjectsModule,
+    GatewayModule,
   ],
   controllers: [TasksController],
   providers: [TasksService],
