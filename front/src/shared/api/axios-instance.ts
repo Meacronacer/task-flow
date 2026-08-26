@@ -1,4 +1,8 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  type AxiosError,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 import { ENV } from '@shared/config';
 
 export const api = axios.create({
@@ -7,6 +11,8 @@ export const api = axios.create({
   withCredentials: false,
 });
 
+// ─── Request interceptor — attach access token ────────────────────
+
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = localStorage.getItem('accessToken');
   if (token && config.headers) {
@@ -14,6 +20,8 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   }
   return config;
 });
+
+// ─── Response interceptor — unwrap { data: T } + refresh on 401 ──
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -33,7 +41,20 @@ function processQueue(error: unknown, token: string | null): void {
 }
 
 api.interceptors.response.use(
-  (response) => response,
+  (response: AxiosResponse) => {
+    const body = response.data as unknown;
+
+    if (
+      body !== null &&
+      typeof body === 'object' &&
+      'data' in body &&
+      !('meta' in body)
+    ) {
+      response.data = (body as { data: unknown }).data;
+    }
+
+    return response;
+  },
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
@@ -67,18 +88,18 @@ api.interceptors.response.use(
     }
 
     try {
-      const { data } = await axios.post<{
-        data: { accessToken: string; refreshToken: string };
-      }>(`${ENV.apiUrl}/auth/refresh`, {}, {
-        headers: { Authorization: `Bearer ${refreshToken}` },
-      });
+      const response = await axios.post<AuthTokens>(
+        `${ENV.apiUrl}/auth/refresh`,
+        {},
+        { headers: { Authorization: `Bearer ${refreshToken}` } },
+      );
 
-      const { accessToken, refreshToken: newRefresh } = data.data;
-      setTokens(accessToken, newRefresh);
-      processQueue(null, accessToken);
+      const tokens = response.data;
+      setTokens(tokens.accessToken, tokens.refreshToken);
+      processQueue(null, tokens.accessToken);
 
       if (originalRequest.headers) {
-        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+        originalRequest.headers['Authorization'] = `Bearer ${tokens.accessToken}`;
       }
 
       return api(originalRequest);
@@ -92,6 +113,11 @@ api.interceptors.response.use(
     }
   },
 );
+
+interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
 
 export function setTokens(accessToken: string, refreshToken: string): void {
   localStorage.setItem('accessToken', accessToken);

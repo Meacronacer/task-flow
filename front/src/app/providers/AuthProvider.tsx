@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect } from 'react';
 import { useUserStore } from '@entities/user/model';
-import { authApi } from '@features/auth/login/auth-api';
+import { authApi } from '@features/auth/login';
 import { clearTokens } from '@shared/api';
 import { Spinner } from '@shared/ui';
 
@@ -21,8 +21,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     authApi
       .me()
-      .then((response) => {
-        setUser(response.data);
+      .then((user: Awaited<ReturnType<typeof authApi.me>>) => {
+        setUser(user);
       })
       .catch(() => {
         clearTokens();

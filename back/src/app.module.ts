@@ -53,7 +53,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     TasksModule,
     ColumnsModule,
     CommentsModule,
-    ScheduleModule,
+    ScheduleModule.forRoot(),
     NotificationsModule,
   ],
 })

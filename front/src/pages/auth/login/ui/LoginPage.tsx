@@ -1,12 +1,11 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useLogin } from '@features/auth/login/use-auth';
 import { loginSchema, type LoginFormValues } from '@features/auth/login/model/schemas';
 import { Button, Input } from '@shared/ui';
 
 export function LoginPage() {
-  const navigate = useNavigate();
   const login = useLogin();
 
   const {
@@ -20,7 +19,6 @@ export function LoginPage() {
 
   const onSubmit = (values: LoginFormValues) => {
     login.mutate(values, {
-      onSuccess: () => navigate('/dashboard', { replace: true }),
       onError: () => {
         setError('root', { message: 'Invalid email or password' });
       },

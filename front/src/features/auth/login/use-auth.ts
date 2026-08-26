@@ -5,26 +5,30 @@ import { useUserStore } from '@entities/user/model';
 
 export function useLogin() {
   const { setUser } = useUserStore();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (dto: LoginDto) => authApi.login(dto),
     onSuccess: async () => {
-      const me = await authApi.me();
-      setUser(me.data);
+      const user = await authApi.me();
+      setUser(user);
       await queryClient.invalidateQueries({ queryKey: ['me'] });
+      navigate('/dashboard', { replace: true });
     },
   });
 }
 
 export function useRegister() {
   const { setUser } = useUserStore();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (dto: RegisterDto) => authApi.register(dto),
     onSuccess: async () => {
-      const me = await authApi.me();
-      setUser(me.data);
+      const user = await authApi.me();
+      setUser(user);
+      navigate('/dashboard', { replace: true });
     },
   });
 }
@@ -50,9 +54,9 @@ export function useMe() {
   return useQuery({
     queryKey: ['me'],
     queryFn: async () => {
-      const response = await authApi.me();
-      setUser(response.data);
-      return response.data;
+      const user = await authApi.me();
+      setUser(user);
+      return user;
     },
     enabled: Boolean(localStorage.getItem('accessToken')),
     retry: false,
