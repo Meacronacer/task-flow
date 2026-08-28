@@ -11,10 +11,12 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
-export interface AuthResponse {
-  data: AuthTokens;
-}
-
-export interface MeResponse {
-  data: User;
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }

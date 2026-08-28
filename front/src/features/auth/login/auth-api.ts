@@ -1,5 +1,5 @@
 import { api, setTokens, clearTokens } from '@shared/api';
-import type { AuthResponse, MeResponse } from '@entities/user/model';
+import type { User } from '@entities/user/model';
 
 export interface LoginDto {
   email: string;
@@ -12,16 +12,21 @@ export interface RegisterDto {
   password: string;
 }
 
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export const authApi = {
-  login: async (dto: LoginDto): Promise<AuthResponse> => {
-    const { data } = await api.post<AuthResponse>('/auth/login', dto);
-    setTokens(data.data.accessToken, data.data.refreshToken);
+  login: async (dto: LoginDto): Promise<AuthTokens> => {
+    const { data } = await api.post<AuthTokens>('/auth/login', dto);
+    setTokens(data.accessToken, data.refreshToken);
     return data;
   },
 
-  register: async (dto: RegisterDto): Promise<AuthResponse> => {
-    const { data } = await api.post<AuthResponse>('/auth/register', dto);
-    setTokens(data.data.accessToken, data.data.refreshToken);
+  register: async (dto: RegisterDto): Promise<AuthTokens> => {
+    const { data } = await api.post<AuthTokens>('/auth/register', dto);
+    setTokens(data.accessToken, data.refreshToken);
     return data;
   },
 
@@ -33,8 +38,8 @@ export const authApi = {
     }
   },
 
-  me: async (): Promise<MeResponse> => {
-    const { data } = await api.get<MeResponse>('/auth/me');
+  me: async (): Promise<User> => {
+    const { data } = await api.get<User>('/auth/me');
     return data;
   },
 };

@@ -15,6 +15,6 @@ import { UsersModule } from '../users/users.module';
   ],
   controllers: [ProjectsController],
   providers: [ProjectsService, ProjectMemberGuard],
-  exports: [ProjectsService, ProjectMemberGuard],
+  exports: [ProjectsService, ProjectMemberGuard, TypeOrmModule],
 })
 export class ProjectsModule {}

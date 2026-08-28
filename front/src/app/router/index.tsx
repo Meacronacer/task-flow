@@ -1,13 +1,11 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { GuestRoute } from './GuestRoute';
 import { LoginPage } from '@pages/auth/login';
 import { RegisterPage } from '@pages/auth/register';
+import { DashboardPage } from '@pages/dashboard';
 
-function DashboardPage() {
-  return <div className="text-white p-8">Dashboard — coming soon</div>;
-}
+// eslint-disable-next-line react-refresh/only-export-components
 function BoardPage() {
   return <div className="text-white p-8">Board — coming soon</div>;
 }
