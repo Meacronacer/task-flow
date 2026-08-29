@@ -43,6 +43,14 @@ export class TasksService {
       throw new NotFoundException('Column not found in this project');
     }
 
+    let position = dto.position;
+    if (position === undefined) {
+      const count = await this.tasksRepo.count({
+        where: { columnId: dto.columnId },
+      });
+      position = count;
+    }
+
     const task = this.tasksRepo.create({
       title: dto.title,
       description: dto.description ?? null,
@@ -50,7 +58,7 @@ export class TasksService {
       projectId,
       assigneeId: dto.assigneeId ?? null,
       priority: dto.priority,
-      position: dto.position,
+      position,
       deadline: dto.deadline ? new Date(dto.deadline) : null,
       status: TaskStatus.TODO,
       createdBy: userId,

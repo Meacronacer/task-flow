@@ -41,8 +41,9 @@ export class CreateTaskDto {
   @IsOptional()
   deadline?: string;
 
-  @ApiProperty({ example: 0 })
+  @ApiPropertyOptional({ example: 0, default: 0 })
   @IsInt()
   @Min(0)
-  position: number;
+  @IsOptional()
+  position?: number;
 }
